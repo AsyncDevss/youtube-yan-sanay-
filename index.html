@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZyTube | Discord & Bot Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: #06070d;
+            --bg-sidebar: #0b0c16;
+            --bg-card: #111322;
+            --bg-search: #171a30;
+            --neon-blue: #00f0ff;
+            --neon-pink: #ff007f;
+            --text-main: #f1f5f9;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* NAVBAR */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: var(--bg-sidebar);
+            border-bottom: 2px solid var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+            z-index: 10;
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 20px; }
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-decoration: none;
+            color: #fff;
+            text-shadow: 0 0 8px var(--neon-blue);
+        }
+        .logo span { color: var(--neon-pink); text-shadow: 0 0 8px var(--neon-pink); }
+
+        .nav-center { display: flex; align-items: center; width: 40%; max-width: 600px; }
+        .search-box {
+            display: flex;
+            width: 100%;
+            background: var(--bg-search);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 20px 0 0 20px;
+            padding: 8px 15px;
+        }
+        .search-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 15px;
+        }
+        .search-btn {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-left: none;
+            color: var(--neon-blue);
+            padding: 0 20px;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+        }
+        .search-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 10px var(--neon-blue); }
+
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .upload-btn {
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+        .upload-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 0, 127, 0.5); }
+
+        /* MAIN BODY */
+        .main-wrapper { display: flex; flex: 1; overflow: hidden; }
+
+        aside {
+            width: 240px;
+            background-color: var(--bg-sidebar);
+            padding: 15px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            border-right: 1px solid rgba(255, 0, 127, 0.1);
+            overflow-y: auto;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .sidebar-item i { width: 25px; color: var(--text-muted); font-size: 18px; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(0, 240, 255, 0.05); color: var(--neon-blue); }
+
+        main { flex: 1; padding: 24px; overflow-y: auto; background-color: var(--bg-main); position: relative; }
+
+        /* TAGS */
+        .tags-container { display: flex; gap: 12px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
+        .tag {
+            background: var(--bg-card); padding: 6px 15px; border-radius: 15px; font-size: 13px;
+            white-space: nowrap; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.2s;
+        }
+        .tag:hover, .tag.active { background: var(--neon-pink); border-color: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink); color: #fff; }
+
+        /* VIDEO GRID */
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+        .video-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid rgba(0, 240, 255, 0.05); transition: all 0.3s; cursor: pointer; }
+        .video-card:hover { transform: translateY(-5px); border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 240, 255, 0.1); }
+        
+        .thumbnail {
+            position: relative; width: 100%; aspect-ratio: 16/9; background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .thumbnail::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); }
+        .play-icon { position: relative; font-size: 40px; color: rgba(255, 255, 255, 0.8); text-shadow: 0 0 10px var(--neon-blue); transition: all 0.3s; z-index: 2; }
+        .video-card:hover .play-icon { color: var(--neon-pink); transform: scale(1.1); }
+        
+        .video-info { display: flex; gap: 12px; padding: 15px; }
+        .channel-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-search); border: 1px solid var(--neon-blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: var(--neon-blue); flex-shrink: 0; }
+        .video-title { font-size: 14px; font-weight: 600; line-height: 20px; margin-bottom: 4px; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .channel-name { font-size: 12px; color: var(--text-muted); }
+        .video-metadata { font-size: 12px; color: var(--text-muted); }
+
+        /* POPUP PLAYER MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { width: 80%; max-width: 850px; background: var(--bg-sidebar); border: 2px solid var(--neon-blue); border-radius: 16px; overflow: hidden; box-shadow: 0 0 30px var(--neon-blue); position: relative; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .modal-close { position: absolute; top: -45px; right: 0; color: #fff; font-size: 30px; cursor: pointer; transition: color 0.2s; }
+        .modal-close:hover { color: var(--neon-pink); }
+        .modal-info { padding: 20px; background: var(--bg-card); }
+
+        /* UPLOAD MODAL */
+        .upload-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 1000; align-items: center; justify-content: center; }
+        .upload-box { background: var(--bg-sidebar); border: 2px solid var(--neon-pink); box-shadow: 0 0 25px var(--neon-pink); padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; position: relative;}
+        .upload-box h2 { font-family: 'Orbitron', sans-serif; font-size: 20px; color: #fff; text-align: center; margin-bottom: 10px; text-shadow: 0 0 8px var(--neon-pink); }
+        .upload-box input, .upload-box select { background: var(--bg-search); border: 1px solid rgba(0,240,255,0.3); padding: 12px; border-radius: 6px; color: #fff; outline: none; }
+        .upload-box input:focus { border-color: var(--neon-blue); }
+        .upload-box button { background: var(--neon-pink); border: none; padding: 12px; border-radius: 6px; color: #fff; font-weight: 600; cursor: pointer; font-size: 15px; }
+        .upload-box button:hover { box-shadow: 0 0 15px var(--neon-pink); }
+        .close-upload { position: absolute; top: 15px; right: 15px; color: var(--text-muted); cursor: pointer; font-size: 20px; }
+        .close-upload:hover { color: #fff; }
+
+        footer { text-align: center; padding: 15px; font-size: 12px; color: var(--text-muted); border-top: 1px solid rgba(255, 0, 127, 0.1); background: var(--bg-sidebar); z-index: 10; }
+        footer span { color: var(--neon-pink); font-weight: bold; }
+        @media (max-width: 768px) { aside { display: none; } .nav-center { width: 50%; } .modal-content { width: 95%; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-left">
+            <a href="#" class="logo">Zy<span>Tube</span></a>
+        </div>
+        <div class="nav-center">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Platformda video ara...">
+            </div>
+            <button class="search-btn" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <div class="nav-right">
+            <button class="upload-btn" id="openUploadBtn"><i class="fa-solid fa-cloud-arrow-up"></i> Video Paylaş</button>
+            <div class="profile-pic">E</div>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <aside>
+            <a href="#" class="sidebar-item active"><i class="fa-solid fa-house"></i> Ana Sayfa</a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-robot"></i> Bot Altyapıları</a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-shield-halved"></i> Sunucu Koruma</a>
+            <hr style="height: 1px; background: rgba(255, 0, 127, 0.1); margin: 10px 0; border: none;">
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-folder"></i> Kitaplık</a>
+            <a href="#" class="sidebar-item"><i class="fa-solid fa-clock-rotate-left"></i> Geçmiş</a>
+        </aside>
+
+        <main>
+            <div class="tags-container" id="tagsContainer">
+                <div class="tag active" data-category="Tümü">Tümü</div>
+                <div class="tag" data-category="Discord Bot Yapımı">Discord Bot Yapımı</div>
+                <div class="tag" data-category="Discord Altyapı">Discord Altyapı</div>
+                <div class="tag" data-category="Sunucu Kurulumu">Sunucu Kurulumu</div>
+                <div class="tag" data-category="Siber Güvenlik">Siber Güvenlik</div>
+            </div>
+
+            <div class="video-grid" id="videoGrid"></div>
+        </main>
+    </div>
+
+    <div class="modal" id="videoModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeModalBtn">&times;</span>
+            <div class="video-container">
+                <iframe id="mainPlayer" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            </div>
+            <div class="modal-info">
+                <h2 id="modalVideoTitle" style="font-size: 18px; margin-bottom: 5px; color:#fff;"></h2>
+                <p id="modalVideoChannel" style="color: var(--neon-blue); font-size: 14px; font-weight:600;"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="upload-modal" id="uploadModal">
+        <div class="upload-box">
+            <span class="close-upload" id="closeUploadBtn">&times;</span>
+            <h2>Yeni Video Paylaş</h2>
+            <input type="text" id="upTitle" placeholder="Video Başlığı (örn: Sıfırdan v14 Guard Botu)" required>
+            <input type="text" id="upChannel" placeholder="Kanal Adınız / Adı" required>
+            <input type="text" id="upUrl" placeholder="YouTube Video Linki" required>
+            <select id="upCategory">
+                <option value="Discord Bot Yapımı">Discord Bot Yapımı</option>
+                <option value="Discord Altyapı">Discord Altyapı</option>
+                <option value="Sunucu Kurulumu">Sunucu Kurulumu</option>
+                <option value="Siber Güvenlik">Siber Güvenlik</option>
+            </select>
+            <button id="submitVideoBtn">Videoyu Platformda Yayınla</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 ZyTube. Tüm hakları saklıdır. | <span>Enes tarafından yapılmıştır.</span></p>
+    </footer>
+
+    <script>
+        // Dış sitelerde oynamasına kesin olarak izin verilen güncel YouTube Video ID'leri
+        const verifiedIds = ["48286_r6BfA", "Lp93fK3pCg8", "O8pS-9-wzG4", "d_H9g3E4VjA"];
+
+        const defaultVideosBase = [
+            { id: "v1", ytid: "48286_r6BfA", title: "Sıfırdan Discord Bot Yapımı - v14 Modern Komut Yapısı", category: "Discord Bot Yapımı", channel: "SynthetixDev" },
+            { id: "v2", ytid: "Lp93fK3pCg8", title: "Gelişmiş Discord Sunucu Koruma ve Güvenlik Sistemleri Kurulumu", category: "Sunucu Kurulumu", channel: "MineShare" },
+            { id: "v3", ytid: "O8pS-9-wzG4", title: "Hazır Discord Altyapı Paylaşımı | 200+ Komutlu Eğlence Botu", category: "Discord Altyapı", channel: "Zycord Labs" },
+            { id: "v4", ytid: "d_H9g3E4VjA", title: "Siber Güvenlik Rehberi: Discord Sunucularını Koruma", category: "Siber Güvenlik", channel: "RootUser" }
+        ];
+
+        let allVideos = [];
+
+        // YouTube URL'sinden ID ayıklayan güvenli regex fonksiyonu
+        function extractVideoID(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : url;
+        }
+
+        // Havuz varyasyonları ile 100 videoyu hatasız oluşturma
+        function initVideoDatabase() {
+            const saved = localStorage.getItem("zytube_custom_videos");
+            const customVideos = saved ? JSON.parse(saved) : [];
+            
+            allVideos = [...customVideos, ...defaultVideosBase];
+
+            const topics = [
+                { t: "Node.js ile 7/24 Aktif Kalabilen Kayıt Botu Yapımı", c: "Discord Bot Yapımı" },
+                { t: "Gelişmiş Ekonomi Botu Altyapısı [Açık Kaynak]", c: "Discord Altyapı" },
+                { t: "Public Sunucu Nasıl Kurulur? Rol ve Kanal Düzeni İpuçları", c: "Sunucu Kurulumu" },
+                { t: "Bot Sahipleri İçin Güvenli Token Saklama Standartları", c: "Siber Güvenlik" },
+                { t: "Discord Slash Commands (Eğik Çizgi) Entegrasyonu", c: "Discord Bot Yapımı" }
+            ];
+            const sampleChannels = ["Scynder Code", "VexelBot Oyuncuları", "NeonCoder", "HackerSpace", "Antoncan Team"];
+
+            let idCounter = allVideos.length + 1;
+            while (allVideos.length < 100) {
+                const sample = topics[Math.floor(Math.random() * topics.length)];
+                const randomYtId = verifiedIds[Math.floor(Math.random() * verifiedIds.length)]; // Hata 153 vermemesi için onaylı ID'ler atanır
+                
+                const views = Math.floor(Math.random() * 950) + 50;
+                const viewsText = views > 500 ? `${(views/10).toFixed(1)}B` : `${views}`;
+                const times = ["2 saat önce", "1 gün önce", "3 gün önce", "1 hafta önce", "1 ay önce"];
+
+                allVideos.push({
+                    id: "sim_" + idCounter,
+                    ytid: randomYtId,
+                    title: `#${idCounter} | ${sample.t}`,
+                    category: sample.c,
+                    channel: sampleChannels[Math.floor(Math.random() * sampleChannels.length)],
+                    simViews: `${viewsText} izlenme • ${times[Math.floor(Math.random() * times.length)]}`
+                });
+                idCounter++;
+            }
+        }
+
+        // Videoları Grid Arayüzüne Basma
+        function renderVideos(videoList) {
+            const grid = document.getElementById("videoGrid");
+            grid.innerHTML = "";
+
+            if(videoList.length === 0) {
+                grid.innerHTML = `<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 50px;">Aradığınız video bulunamadı.</p>`;
+                return;
+            }
+
+            videoList.forEach(video => {
+                const imgUrl = `https://img.youtube.com/vi/${video.ytid}/mqdefault.jpg`;
+                const metadata = video.simViews ? video.simViews : "1.8K izlenme • Az önce yüklendi";
+                const avatarText = video.channel.substring(0,2).toUpperCase();
+
+                const card = document.createElement("div");
+                card.className = "video-card";
+                card.onclick = () => openPlayer(video.ytid, video.title, video.channel);
+                card.innerHTML = `
+                    <div class="thumbnail" style="background-image: url('${imgUrl}');">
+                        <i class="fa-solid fa-play play-icon"></i>
+                    </div>
+                    <div class="video-info">
+                        <div class="channel-avatar">${avatarText}</div>
+                        <div class="video-text">
+                            <h3 class="video-title">${video.title}</h3>
+                            <p class="channel-name">${video.channel}</p>
+                            <p class="video-metadata">${metadata}</p>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // OYNATICI MODAL KONTROLLERİ (Hatasız Oynatıcı Entegrasyonu)
+        function openPlayer(ytid, title, channel) {
+            const modal = document.getElementById("videoModal");
+            const player = document.getElementById("mainPlayer");
+            document.getElementById("modalVideoTitle").innerText = title;
+            document.getElementById("modalVideoChannel").innerText = "Kanal: " + channel;
+            
+            // Hata 153'ü engellemek için gerekli iframe parametreleri eklendi
+            player.src = `https://www.youtube.com/embed/${ytid}?autoplay=1&rel=0&enablejsapi=1`;
+            modal.style.display = "flex";
+        }
+
+        function closePlayer() {
+            document.getElementById("videoModal").style.display = "none";
+            document.getElementById("mainPlayer").src = "";
+        }
+
+        // KULLANICI VİDEO YÜKLEME MANTIĞI (LOCALSTORAGE)
+        const uploadModal = document.getElementById("uploadModal");
+        document.getElementById("openUploadBtn").onclick = () => uploadModal.style.display = "flex";
+        document.getElementById("closeUploadBtn").onclick = () => uploadModal.style.display = "none";
+
+        document.getElementById("submitVideoBtn").onclick = () => {
+            const title = document.getElementById("upTitle").value;
+            const channel = document.getElementById("upChannel").value;
+            const urlInput = document.getElementById("upUrl").value;
+            const category = document.getElementById("upCategory").value;
+
+            if(!title || !channel || !urlInput) {
+                alert("Lütfen tüm alanları doldurun!");
+                return;
+            }
+
+            const videoId = extractVideoID(urlInput);
+            const saved = localStorage.getItem("zytube_custom_videos");
+            const customVideos = saved ? JSON.parse(saved) : [];
+
+            const newVideo = {
+                id: "custom_" + Date.now(),
+                ytid: videoId,
+                title: "[Paylaşılan] " + title,
+                category: category,
+                channel: channel
+            };
+
+            customVideos.unshift(newVideo);
+            localStorage.setItem("zytube_custom_videos", JSON.stringify(customVideos));
+
+            // Formu Temizle
+            document.getElementById("upTitle").value = "";
+            document.getElementById("upChannel").value = "";
+            document.getElementById("upUrl").value = "";
+            uploadModal.style.display = "none";
+
+            alert("Videonuz platforma eklendi ve ana sayfaya yerleştirildi!");
+            initVideoDatabase();
+            renderVideos(allVideos);
+        };
+
+        // KATEGORİ VE SEARCH FİLTRESİ
+        let currentCategory = "Tümü";
+
+        function filterVideos() {
+            const searchText = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = allVideos.filter(video => {
+                const matchesCategory = (currentCategory === "Tümü" || video.category === currentCategory);
+                const matchesSearch = video.title.toLowerCase().includes(searchText) || video.channel.toLowerCase().includes(searchText);
+                return matchesCategory && matchesSearch;
+            });
+            renderVideos(filtered);
+        }
+
+        // Event Listeners
+        document.getElementById("tagsContainer").addEventListener("click", (e) => {
+            if(e.target.classList.contains("tag")) {
+                document.querySelectorAll(".tag").forEach(t => t.classList.remove("active"));
+                e.target.classList.add("active");
+                currentCategory = e.target.getAttribute("data-category");
+                filterVideos();
+            }
+        });
+
+        document.getElementById("searchInput").addEventListener("input", filterVideos);
+        document.getElementById("searchBtn").addEventListener("click", filterVideos);
+        document.getElementById("closeModalBtn").onclick = closePlayer;
+        
+        window.onclick = (e) => {
+            if (e.target == uploadModal) uploadModal.style.display = "none";
+            if (e.target == document.getElementById("videoModal")) closePlayer();
+        }
+
+        // Sistemi Yükle
+        initVideoDatabase();
+        renderVideos(allVideos);
+    </script>
+</body>
+</html>
